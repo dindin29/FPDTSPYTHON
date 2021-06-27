@@ -1,108 +1,124 @@
-import random
-from enum import IntEnum
+from tkinter import *
+from PIL import Image, ImageTk
+from random import randint
 
-print("Selamat Datang di Skuy Suit \nMari Kita Suit")
 
-class Jari(IntEnum):
-    gunting = 1
-    batu = 2
-    kertas = 3
+#awal mainwindow
+root = Tk()
+root.title("Gunting Batu Kertas")
+root.configure(background="#F0B7A4")
 
-class Pemain():
-    def __init__(self, nama = "komputer"):
-        self.nama = nama
-        self.__jmlMenang = 0
-    
-    def menang(self, nilai):
-        self.__jmlMenang += nilai
-    
-    def totalMenang(self):
-        return self.__jmlMenang
-    
-    def aksi(self):
-        self.aksiDipilih = Jari()
 
-def langkahPemain():
-    jariTersedia = [f"{i.name}[{i.value}]" for i in Jari]
-    pilihan = ", ".join(jariTersedia)
-    ambilPilihan = int(input(f"Pilih salah satu ({pilihan}): "))
-    if ambilPilihan in range(1,4):
-      pilihanPemain = Jari(ambilPilihan)
-      return pilihanPemain 
-    print("Angka salah")
-    return langkahPemain()
 
-def langkahBot():
-    ambilPilihan = random.randint(1,len(Jari))
-    pilihanBot = Jari(ambilPilihan)
-    return pilihanBot
+#gambar
+batuGambar = ImageTk.PhotoImage(Image.open('batu_user.png'))
+kertasGambar = ImageTk.PhotoImage(Image.open('kertas_user.png'))
+guntingGambar = ImageTk.PhotoImage(Image.open('gunting_user.png'))
+batuGambarkomp = ImageTk.PhotoImage(Image.open('batu.png'))
+kertasGambarKomp = ImageTk.PhotoImage(Image.open('kertas.png'))
+guntingGambarKomp = ImageTk.PhotoImage(Image.open('gunting.png'))
 
-def suit(suit_1,suit_2):
-    if suit_1 == suit_2:
-        print(pemain_1.nama,pemain_2.nama,sep=" dan ")
-        print ("Hasilnya seriiii....!!!")
-    elif suit_1 == Jari.gunting:
-        if suit_2 == Jari.kertas:
-            pemain_1.menang(1)
-            print ("Yang menang : ",pemain_1.nama)
+# memasukkan gambar
+userLabel = Label(root,image=kertasGambar, bg="#F0B7A4")
+kompLabel = Label(root,image=kertasGambarKomp, bg="#F0B7A4")
+kompLabel.grid(row=1, column=0)
+userLabel.grid(row=1, column=4)
+
+#Nilai
+nilaiPemain = Label(root, text=0, font=100, bg="#F0B7A4", fg="white")
+nilaiKomp = Label(root, text=0, font=100, bg="#F0B7A4", fg="white")
+nilaiKomp.grid(row=1, column=1)
+nilaiPemain.grid(row=1, column=3)
+
+
+# indicators
+indikatorPemain= Label(root, font=50, text="PEMAIN", bg="#f18c8e", fg="white")
+indikatorKomputer = Label(root, font=50, text="KOMPUTER", bg="#f18c8e", fg="white")
+indikatorPemain.grid(row=0, column=3)
+indikatorKomputer.grid(row=0, column=1)
+
+# pesan
+pesan = Label(root, font=50, bg="#9b59b6", fg="white")
+pesan.grid(row=3, column=2)
+
+def updatePesan(x):
+    pesan['text'] = x
+
+# update user score
+
+
+def updateNilaiUser():
+    score = int(nilaiPemain["text"])
+    score += 1
+    nilaiPemain["text"] = str(score)
+
+# update computer score
+
+
+def updateNilaiKomp():
+    score = int(nilaiKomp["text"])
+    score += 1
+    nilaiKomp["text"] = str(score)
+#cek Pemenang
+
+
+def cekPemenang(pemain, komp):
+    if pemain == komp :
+        updatePesan("SERIIII!!!!")
+    elif pemain == "batu":
+        if komp == "kertas":
+            updatePesan("Kamu Kalah")
+            updateNilaiKomp()
         else:
-            pemain_2.menang(1)
-            print ("Yang menang : ",pemain_2.nama)
-    elif suit_1 == Jari.batu:
-        if suit_2 == Jari.gunting:
-            pemain_1.menang(1)
-            print ("Yang menang : ",pemain_1.nama)
+            updatePesan("Kamu Menang")
+            updateNilaiUser()
+    elif pemain == "paper":
+        if komp == "gunting":
+            updatePesan("Kamu Kalah")
+            updateNilaiKomp()
         else:
-            pemain_2.menang(1)
-            print ("Yang menang : ",pemain_2.nama)
-    elif suit_1 == Jari.kertas:
-        if suit_2 == Jari.batu:
-            pemain_1.menang(1)
-            print ("Yang menang : ",pemain_1.nama)
+            updatePesan("Kamu Menang")
+            updateNilaiUser()
+    elif pemain == "gunting":
+        if komp == "batu":
+            updatePesan("Kamu Kalah")
+            updateNilaiKomp()
         else:
-            pemain_2.menang(1)
-            print ("Yang menang : ",pemain_2.nama)
+            updatePesan("Kamu Menang")
+            updateNilaiUser()
 
-babak = int(input("Berapa babak yang diinginkan? " ))
-tipe = int(input("Pemain tunggal[0] atau ganda[1] ? "))
+    else:
+        pass
 
-if tipe == 0:
-    inputPemain_1 = str(input("Masukkan nama pemain: "))
-    pemain_1 = Pemain(inputPemain_1)
-    pemain_2 = Pemain()
-    for a in range (babak):
-        print("Babak : ", a+1)
-        print(pemain_1.nama, end=" ")
-        pemain_1.aksi = langkahPemain()
-        pemain_2.aksi = print(langkahBot())
-        suit(pemain_1.aksi,pemain_2.aksi)
-elif tipe == 1:
-    inputPemain_1 = str(input("Masukkan nama pemain 1: "))
-    inputPemain_2 = str(input("Masukkan nama pemain 2: "))
-    pemain_1 = Pemain(inputPemain_1)
-    pemain_2 = Pemain(inputPemain_2)
-    for b in range(babak):
-        print("Babak : ", b+1)
-        print(pemain_1.nama, end=" ")
-        pemain_1.aksi = langkahPemain()
-        print(pemain_2.nama, end=" ")
-        pemain_2.aksi = langkahPemain()
-        suit(pemain_1.aksi,pemain_2.aksi)
-else:
-    print("Anda salah memasukkan input")
-    quit()
 
-print("\n\n")
-print("======= TOTAL MENANG =======")
-print("total menang ",(pemain_1.nama), ":",pemain_1.totalMenang())
-print("total menang", (pemain_2.nama), ": ",pemain_2.totalMenang())
-print("\n")
-print("======= PEMENANG AKHIR =======")
-if pemain_1.totalMenang() == pemain_2.totalMenang():
-    print("Hasilnya Seri!!!!")
-elif pemain_1.totalMenang() > pemain_2.totalMenang():
-    pemenang = pemain_1.nama
-    print(pemenang.upper())
-else:
-    pemenang = pemain_2.nama
-    print(pemenang.upper())
+#update pilihan
+Jari = ["batu", "kertas", "gunting"]
+
+def updateChoice(x):
+
+    # komputer
+    pilihanKomp = Jari[randint(0, 2)]
+    if pilihanKomp == "batu":
+        kompLabel.configure(image=batuGambarkomp)
+    elif pilihanKomp == "kertas":
+        kompLabel.configure(image=kertasGambarKomp)
+    else:
+        kompLabel.configure(image=guntingGambarKomp)
+
+
+#pemain
+    if x == "batu":
+        userLabel.configure(image=batuGambar)
+    elif x == "paper":
+        userLabel.configure(image=kertasGambar)
+    else:
+        userLabel.configure(image=guntingGambar)
+
+    cekPemenang(x, pilihanKomp)
+
+# buttons
+batu = Button(root, width=20, height=2, text="BATU", bg="#f0b7a4", fg="white", command=lambda: updateChoice("batu")).grid(row=2, column=1)
+kertas = Button(root, width=20, height=2, text="KERTAS", bg="#b987cc", fg="white", command=lambda: updateChoice("kertas")).grid(row=2, column=2)
+gunting = Button(root, width=20, height=2, text="GUNTING", bg="#b47136", fg="white", command=lambda: updateChoice("gunting")).grid(row=2, column=3)
+
+root.mainloop()
